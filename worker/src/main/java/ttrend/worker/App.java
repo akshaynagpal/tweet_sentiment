@@ -28,17 +28,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.amazonaws.services.sqs.model.DeleteMessageRequest;
-import com.amazonaws.services.sqs.model.DeleteQueueRequest;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-
 import org.json.*;
-
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyLanguage;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.DocumentSentiment;
 
@@ -91,7 +81,14 @@ class RunThread implements Runnable{
 				System.out.println("Tweet:" + tweet);
 				JSONObject tweetData = new JSONObject(tweet.toString());
 				System.out.println("TSENTIMENT:"+tweetData.get("status").toString());
-				String sentiment = getSentiment(tweetData.get("status").toString());
+				String sentiment = null;
+				try{
+					sentiment = getSentiment(tweetData.get("status").toString());
+				}catch(Exception e){
+					e.printStackTrace();
+					sentiment = "neutral";
+				}
+				
 				System.out.println("SENTIMENT:"+ sentiment);
 				tweetData.put("sentiment", sentiment);
 				tweetData.remove("status");
@@ -162,5 +159,7 @@ public class App
 
 		RunThread runThread1 = new RunThread("thread1", "localhost:2181", "tweet");
 		runThread1.start();
+		RunThread runThread2 = new RunThread("thread2", "localhost:2181", "tweet");
+		runThread2.start();
 	}	
 }
