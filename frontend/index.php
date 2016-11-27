@@ -17,7 +17,7 @@ $valid_keyword = false;
 <!DOCTYPE html>
 <html>
 <head>
-	  <title>Tweet Map </title>
+	  <title>Tweet Trends with Sentiment </title>
 	  <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <style>
@@ -43,13 +43,11 @@ $valid_keyword = false;
         var map;
         var markers = []
         var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        //var markerCluster;
         <?php  echo "var geoArray =  ".$arrayForJS.";\n";   ?>
 
         //initializing map
 
         window.initMap = function() {
-            console.log(geoArray[0]["lat"]);
             var locations = [];
             var geoArrayLength = geoArray.length;
             var marker;
@@ -77,16 +75,7 @@ $valid_keyword = false;
                         icon:pinImage
                   }))
             }
-            // markers = locations.map(function(location, i) {
-            //       return new google.maps.Marker({
-            //         position: location,
-            //         label: labels[i % labels.length]
-
-            //       });
-            // });
             setMapOnAll(map);
-            // markerCluster = new MarkerClusterer(map, markers,
-              // {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
             }
 
 
@@ -123,8 +112,6 @@ $valid_keyword = false;
           geoArrayNewLength = geoArrayNew.length;
           console.log("tweets indexed (max 10K) = "+geoArrayNewLength);
           deleteMarkers();
-          //remove clusters
-          //markerCluster.clearMarkers();
 
           for(var i=0;i<geoArrayNewLength;i++){
               pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + geoArrayNew[i]["sentiment"],
@@ -139,36 +126,22 @@ $valid_keyword = false;
                   }))
           }
           
-
-          // for(var i=0;i<geoArrayNewLength;i++){
-          //     locations2.push(new google.maps.LatLng(geoArrayNew[i]["lat"],geoArrayNew[i]["long"]));
-          // }
-          // markers = locations2.map(function(location, i) {
-          //         return new google.maps.Marker({
-          //           position: location,
-          //           label: labels[i % labels.length]
-          //         });
-          // });
           setMapOnAll(map);
-          // markerCluster = new MarkerClusterer(map, markers,
-          //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
         }
 
-    // updates tweets in real time every 45 seconds
+    // updates tweets in real time every 10 seconds
 
         $(document).ready(function(){
             setInterval(function() {
                 $("#data").load('realtime.php?keyword='+'<?php echo $keyword ?>');
-                
                 updateMap();
-                // console.log("refreshed");
             }, 10000);
         });
     </script>
 </head>
 <body>
 
-  <h1>Tweetmap (Tweets refresh in Real Time every 10 seconds)</h1>
+  <h1>Tweet Trends with Sentiment (Tweets Refresh in Real Time every 10 seconds)</h1>
   <div id="data" style="display: none;"></div>
 
   <!-- dropdown menu -->

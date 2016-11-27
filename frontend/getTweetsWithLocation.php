@@ -1,5 +1,5 @@
 <?php
-  // method which pulls tweets which have location from ElasticSearch
+  // method which pulls tweets which have location and sentiment from ElasticSearch
 	function getTweetsWithLocation($keyword){
 		$ci = curl_init();
 		curl_setopt($ci, CURLOPT_URL, "https://search-twitttrends-zh3numc3nqottfkwdki7lvys54.us-east-1.es.amazonaws.com/".$keyword."/_search?size=10000");
@@ -14,15 +14,17 @@
   		for ($i=0; $i < $num_tweets; $i++) {
     		$geoArray[$i]["lat"] = $tweets[$i]['_source']['lat']; 
     		$geoArray[$i]["long"] = $tweets[$i]['_source']['long'];
+
+        //coloring marker based on sentiment
         $sent = $tweets[$i]['_source']['sentiment'];
         if($sent=="positive"){
-          $geoArray[$i]["sentiment"] = "00FF00";
+          $geoArray[$i]["sentiment"] = "00FF00"; //Green
         }
         elseif ($sent=="negative") {
-          $geoArray[$i]["sentiment"] = "FF0000";
+          $geoArray[$i]["sentiment"] = "FF0000";  // Red
         }
         else{
-          $geoArray[$i]["sentiment"] = "0000FF"; 
+          $geoArray[$i]["sentiment"] = "0000FF";  // Blue
         }
   		}
   		return $geoArray;
