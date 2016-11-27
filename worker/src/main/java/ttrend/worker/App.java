@@ -91,8 +91,19 @@ class RunThread implements Runnable{
 				System.out.println("Tweet:" + tweet);
 				JSONObject tweetData = new JSONObject(tweet.toString());
 				System.out.println("TSENTIMENT:"+tweetData.get("status").toString());
-				System.out.println("SENTIMENT:"+getSentiment(tweetData.get("status").toString()));
-				tweetData.put("sentiment", getSentiment(tweetData.get("status").toString()));
+				String sentiment = getSentiment(tweetData.get("status").toString());
+				System.out.println("SENTIMENT:"+ sentiment);
+				tweetData.put("sentiment", sentiment);
+				tweetData.remove("status");
+				
+				AmazonSNSClient snsClient = new AmazonSNSClient(credentials);
+				snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
+				//publish to an SNS topic
+				String topicArn = "arn:aws:sns:us-east-1:021959201754:tweetTrends";
+				PublishRequest publishRequest = new PublishRequest(topicArn, tweetData.toString());
+				PublishResult publishResult = snsClient.publish(publishRequest);
+				//print MessageId of message published to SNS topic
+				System.out.println("MessageId - " + publishResult.getMessageId());
 			}
 		}
 		if (consumer != null) {
@@ -119,18 +130,6 @@ class RunThread implements Runnable{
 	    	// parsing json for sentiment
 	    	JSONObject obj = new JSONObject(sentiment.toString());
 	    	parsedSentiment = obj.getJSONObject("docSentiment").getString("type");
-	    	
-	    	AmazonSNSClient snsClient = new AmazonSNSClient(credentials);
-			snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
-			//publish to an SNS topic
-			String topicArn = "arn:aws:sns:us-east-1:021959201754:tweetTrends";
-			String msg = "hi hello whats up?";
-			PublishRequest publishRequest = new PublishRequest(topicArn, msg);
-			PublishResult publishResult = snsClient.publish(publishRequest);
-			//print MessageId of message published to SNS topic
-			System.out.println("MessageId - " + publishResult.getMessageId());
-	    	
-	    	
 	    	
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
