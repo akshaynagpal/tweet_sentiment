@@ -1,0 +1,6 @@
+{
+   "require": {
+      "guzzlehttp/guzzle": "~6.0",
+      "aws/aws-php-sns-message-validator": "^1.1"
+   }
+}
