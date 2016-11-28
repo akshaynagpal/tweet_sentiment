@@ -161,7 +161,7 @@ public class App
 						if(status.getGeoLocation()!=null){
 							System.out.println("At "+status.getCreatedAt().toString()+ " name: "+status.getUser().getScreenName()+
 									" tweeted: "+status.getText()+" from: "+status.getGeoLocation().toString());
-						 
+							// Push Data to Kafka
 							JSONObject tweetData = new JSONObject();
 							tweetData.put("topic", searchTerms[ctr]);
 							tweetData.put("id", status.getId());

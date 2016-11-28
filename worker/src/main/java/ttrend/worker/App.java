@@ -41,7 +41,7 @@ class RunThread implements Runnable{
 	private String topic;
 	private final ConsumerConnector consumer;
 	private AWSCredentials credentials;
-
+	// Initialize zookeeper properties to read from Kafka
 	RunThread(String name, String zookeeper,String topic) {
 		threadName = name;
 		System.out.println("Creating " +  threadName );
@@ -55,7 +55,7 @@ class RunThread implements Runnable{
 		properties.put("auto.commit.interval.ms", "1000");
 		consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
 		this.topic = topic;
-
+		// Get AWS creadentials
 		try {
 			credentials = new ProfileCredentialsProvider().getCredentials();
 		} catch (Exception e) {
@@ -69,9 +69,9 @@ class RunThread implements Runnable{
 	}
 
 	public void testConsumer() {
+		// Get the data from Kafka
 		Map<String, Integer> topicCount = new HashMap<String,Integer>();
 		topicCount.put(topic, 1);
-
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerStreams = consumer.createMessageStreams(topicCount);
 		List<KafkaStream<byte[], byte[]>> streams = consumerStreams.get(topic);
 		for (final KafkaStream stream : streams) {
@@ -83,6 +83,8 @@ class RunThread implements Runnable{
 				System.out.println("TSENTIMENT:"+tweetData.get("status").toString());
 				String sentiment = null;
 				try{
+// Call alchemy function. Set status to neutral to handle errors like rate limiting,
+// too many special characters
 					sentiment = getSentiment(tweetData.get("status").toString());
 				}catch(Exception e){
 					e.printStackTrace();
@@ -92,7 +94,7 @@ class RunThread implements Runnable{
 				System.out.println("SENTIMENT:"+ sentiment);
 				tweetData.put("sentiment", sentiment);
 				tweetData.remove("status");
-				
+// Push to SNS
 				AmazonSNSClient snsClient = new AmazonSNSClient(credentials);
 				snsClient.setRegion(Region.getRegion(Regions.US_EAST_1));
 				//publish to an SNS topic
@@ -107,7 +109,7 @@ class RunThread implements Runnable{
 			consumer.shutdown();
 		} 
 	}
-	
+	// Get the sentiment from Alchemy API
 	public String getSentiment(String tweet){
 		AlchemyLanguage service = new AlchemyLanguage();
     	Properties prop = new Properties();
@@ -129,10 +131,8 @@ class RunThread implements Runnable{
 	    	parsedSentiment = obj.getJSONObject("docSentiment").getString("type");
 	    	
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	return parsedSentiment;
@@ -156,7 +156,7 @@ public class App
 {
 
 	public static void main(String[] args) {
-
+		// Start pool thread for workers
 		RunThread runThread1 = new RunThread("thread1", "localhost:2181", "tweet");
 		runThread1.start();
 		RunThread runThread2 = new RunThread("thread2", "localhost:2181", "tweet");
