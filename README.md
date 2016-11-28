@@ -1,4 +1,4 @@
-![alt text](https://github.com/abhijeetmehrotra/tweetTrends/blob/master/tweetSentiments.png "Tweets with Sentiments Screenshot")
+![alt text](https://github.com/akshaynagpal/tweet_sentiment/blob/master/tweetSentiments.png "Tweets with Sentiments Screenshot")
 # TweetTrends
 ### By Akshay Nagpal (an2756) and Abhijeet Mehrotra(am4586)
 ### Main features:    
@@ -10,5 +10,5 @@
 
 ### ElasticBeanstalk URL: http://sample-env.seymas7wnd.us-east-1.elasticbeanstalk.com/    
 
-![alt text](https://github.com/abhijeetmehrotra/tweetTrends/blob/master/architecture_diagram.png "architecture_diagram")
+![alt text](https://github.com/akshaynagpal/tweet_sentiment/blob/master/architecture_diagram.png "architecture_diagram")
 
