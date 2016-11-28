@@ -1,3 +1,4 @@
+##ec2 setup ##
 ~/cloud/credentials    
 ssh -i "file.pem" ec2_url    
 
